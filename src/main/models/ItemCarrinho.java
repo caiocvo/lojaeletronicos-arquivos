@@ -3,6 +3,9 @@ package main.models;
 public class ItemCarrinho {
     private Produto produto;
     private int quantidade;
+    public double getSubtotal(){
+        return produto.getPreco()*quantidade;
+    }
     public Produto getProduto() {
         return produto;
     }

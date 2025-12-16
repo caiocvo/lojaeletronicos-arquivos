@@ -3,28 +3,26 @@ package main.models;
 import java.util.Date;
 
 public class Pedido {
-    private Clientes id;
+    private int id;
+    private int idCliente;
     private double valorTotal;
     private int garantia;
     private Date data;
     private Produto[] produtos;
-
-    public Produto[] getProdutos() {
-        return produtos;
-    }
-
-    public void setProdutos(Produto[] produtos) {
-        this.produtos = produtos;
-    }
-
-
-
-    public Clientes getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(Clientes id) {
+    public void setId(int id) {
         this.id = id;
+    }
+
+    public int getIdCliente() {
+        return idCliente;
+    }
+
+    public void setIdCliente(int idCliente) {
+        this.idCliente = idCliente;
     }
 
     public double getValorTotal() {
@@ -50,5 +48,16 @@ public class Pedido {
     public void setData(Date data) {
         this.data = data;
     }
+
+    public Produto[] getProdutos() {
+        return produtos;
+    }
+
+    public void setProdutos(Produto[] produtos) {
+        this.produtos = produtos;
+    }
+
+
+
 
 }

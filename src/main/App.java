@@ -17,7 +17,11 @@ public class App {
         String raizPedido = raiz + "pedidos/";
         String raizEndereco = raiz + "enderecos/";
         String raizCarrinho = raiz + "carrinho/";
+
+        //Arquivos
         String arqIdCliente = raiz + "idCliente.txt";
+        String arqIdProduto = raiz + "idProduto.txt";
+        String arqIdPedido  = raiz + "idPedido.txt";
 
         //Login ADM
         String idADM = "457";

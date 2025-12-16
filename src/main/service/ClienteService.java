@@ -3,15 +3,24 @@ package main.service;
 import main.models.Clientes;
 import main.models.Endereco;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.Scanner;
 
+import static main.util.ArquivoUtil.gravarId;
+
 public class ClienteService {
-    public static void cadastrarCliente (String arqIdCliente){
+    public static void cadastrarCliente (String arqIdCliente, String arqCliente, Scanner sc){
         int id = lerIdCliente(arqIdCliente);
-        //Clientes cliente = cria
+        if(id == -1){
+            System.err.println("Erro ao obter ID do cliente");
+            return;
+        }
+        Clientes cliente = criarCliente(id,sc);
+
+        salvarCliente(cliente,arqCliente);
+
+        gravarId(id+1, arqCliente);
+        //id+1 para partir do 1 nao do 0
     }
 
     private static int lerIdCliente(String arq)  {
@@ -27,6 +36,28 @@ public class ClienteService {
         }
         return -1;
     }
+
+    private static void salvarCliente(Clientes c, String arq) {
+        try (PrintWriter pw = new PrintWriter(new FileWriter(arq, true))) {
+
+            pw.println(
+                    c.getId() + ";" +
+                    c.getNome() + ";" +
+                    c.getEmail() + ";" +
+                    c.getSenha() + ";" +
+                    c.getTelefone() + ";" +
+                    c.getEndereco().getRua() + ";" +
+                    c.getEndereco().getNumero() + ";" +
+                    c.getEndereco().getBairro() + ";" +
+                    c.getEndereco().getEstado()
+            );
+
+        } catch (IOException e) {
+            System.err.println("Erro ao salvar cliente");
+            e.printStackTrace();
+        }
+    }
+
     private static Clientes criarCliente (int id, Scanner sc) {
         Clientes cliente = new Clientes();
         Endereco endereco = new Endereco();
