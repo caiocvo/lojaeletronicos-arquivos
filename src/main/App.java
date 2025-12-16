@@ -1,5 +1,6 @@
 package main;
 
+import main.service.ProdutoService;
 import main.util.ArquivoUtil;
 
 import java.io.*;
@@ -28,7 +29,7 @@ public class App {
         String senhaADM = "1234";
         boolean acessoADM = false;
         Scanner sc = new Scanner(System.in);
-
+        iniciarReset(raiz,raizClientes,raizProdutos,raizPedido,raizEndereco,raizCarrinho,arqIdCliente,arqIdProduto,arqIdPedido);
         //LOGIN
         entrar();
         char opLogin = sc.nextLine().trim().charAt(0);
@@ -43,22 +44,41 @@ public class App {
 //CHAMADA DOS MENUS QUE VOCE AINDA VAI CRIAR
 
         while(true){
+            // ... dentro do while(true)
             if(acessoADM){
                 menuADM();
-                opcao = sc.nextLine().charAt(0);
+                opcao = sc.nextLine().trim().charAt(0); // Adicionei .trim() para segurança
                 if(Objects.equals(opcao,'5'))
                     break;
+
+                // -------------------------------------------------------------------
+                // CHAMADA DO PRODUTOSERVICE AQUI
+                // -------------------------------------------------------------------
                 switch (opcao){
-                    //Aqui coloca as opções do menu do ADM
+                    case '1':
+                        // 1) Cadastrar Produtos
+                        // Passa: arqIdProduto, o caminho onde o produto final será salvo, e o Scanner.
+                        ProdutoService.cadastrarProduto(arqIdProduto, raizProdutos + "produtos.txt", sc);
+                        break;
+                    case '2':
+                        // Aqui você chamaria o listar produtos
+                        System.out.println("Opção de Listar Produtos (ainda não implementada)");
+                        break;
+                    // ... outras opções
+                    default:
+                        System.out.println("Opção inválida. Tente novamente.");
+                        break;
                 }
+                // -------------------------------------------------------------------
             }
+// ...
             //Aqui voce precisa chamar a função cliente para ele fazer o Big loggin ou entao chamar o menu
         }
     }
 
-//PRECISA CRIAR CADASTRO DE CLIENTE
+
     private static void iniciarReset (String raiz,String raizClientes, String raizProdutos, String raizPedido,
-                                      String raizEndereco, String raizCarrinho, String arqIdCliente){
+                                      String raizEndereco, String raizCarrinho, String arqIdCliente,String arqIdProduto, String arqIdPedido){
         File dir=new File(raiz);
         if(!dir.exists()) {
             dir.mkdir();
@@ -91,6 +111,8 @@ public class App {
             apagarArquivos(dir);
         }
         ArquivoUtil.gravarId(0,arqIdCliente);
+        ArquivoUtil.gravarId(0,arqIdProduto);
+        ArquivoUtil.gravarId(0,arqIdPedido);
     }
 
     //Para criar cliente, é necessário ler o id e após isso,

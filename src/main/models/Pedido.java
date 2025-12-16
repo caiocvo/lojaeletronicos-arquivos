@@ -3,12 +3,12 @@ package main.models;
 import java.util.Date;
 
 public class Pedido {
+
     private int id;
     private int idCliente;
-    private double valorTotal;
-    private int garantia;
+    private ItemCarrinho[] itens;
     private Date data;
-    private Produto[] produtos;
+
     public int getId() {
         return id;
     }
@@ -25,20 +25,12 @@ public class Pedido {
         this.idCliente = idCliente;
     }
 
-    public double getValorTotal() {
-        return valorTotal;
+    public ItemCarrinho[] getItens() {
+        return itens;
     }
 
-    public void setValorTotal(double valorTotal) {
-        this.valorTotal = valorTotal;
-    }
-
-    public int getGarantia() {
-        return garantia;
-    }
-
-    public void setGarantia(int garantia) {
-        this.garantia = garantia;
+    public void setItens(ItemCarrinho[] itens) {
+        this.itens = itens;
     }
 
     public Date getData() {
@@ -49,15 +41,11 @@ public class Pedido {
         this.data = data;
     }
 
-    public Produto[] getProdutos() {
-        return produtos;
+    public double getValorTotal() {
+        double total = 0;
+        for (ItemCarrinho item : itens) {
+            total += item.getSubtotal();
+        }
+        return total;
     }
-
-    public void setProdutos(Produto[] produtos) {
-        this.produtos = produtos;
-    }
-
-
-
-
 }
