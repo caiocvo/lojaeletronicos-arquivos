@@ -18,17 +18,17 @@ public class CarrinhoService {
         carrinho.removerItem(indice);
     }
 
-    public static void atualizarQuantidade(Carrinho carrinho, int indice, int novaQtd) {
-        carrinho.atualizarQuantidade(indice, novaQtd);
-    }
-
     public static void listarItens(Carrinho carrinho) {
-        for (ItemCarrinho item : carrinho.getItens()) {
+        ItemCarrinho[] itens = carrinho.getItens();
+
+        for (int i = 0; i < itens.length; i++) {
             System.out.println(
-                    item.getProduto().getNome() +
-                            " - Qtd: " + item.getQuantidade() +
-                            " - Subtotal: " + item.getSubtotal()
+                    "[" + i + "] " +
+                            itens[i].getProduto().getNome() +
+                            " - Qtd: " + itens[i].getQuantidade() +
+                            " - Subtotal: " + itens[i].getSubtotal()
             );
         }
+
     }
 }

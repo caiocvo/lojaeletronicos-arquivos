@@ -14,7 +14,12 @@ import static main.util.ArquivoUtil.lerId;
 
 public class PedidoService {
 
-    public static void finalizarPedido(Carrinho carrinho, String arqIdPedido, String arqPedido) {
+    public static void finalizarPedido(Carrinho carrinho, String arqIdPedido, String arqPedido, String arqProduto) {
+
+        if (carrinho.getItens().length == 0) {
+            System.err.println("Carrinho vazio. Não é possível finalizar o pedido.");
+            return;
+        }
 
         int idPedido = lerId(arqIdPedido);
         if (idPedido == -1) {
@@ -26,6 +31,14 @@ public class PedidoService {
         pedido.setId(idPedido);
         pedido.setIdCliente(carrinho.getIdCliente());
         pedido.setItens(carrinho.getItens());
+        for (ItemCarrinho item : carrinho.getItens()) {
+            ProdutoService.baixarEstoque(
+                    item.getProduto().getId(),
+                    item.getQuantidade(),
+                    arqProduto
+            );
+        }
+
         pedido.setData(new Date());
 
         salvarPedido(pedido, arqPedido);

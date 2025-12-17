@@ -1,5 +1,6 @@
 package main.service;
 
+import main.exception.ClienteValidator;
 import main.models.Clientes;
 import main.models.Endereco;
 
@@ -10,18 +11,20 @@ import static main.util.ArquivoUtil.gravarId;
 import static main.util.ArquivoUtil.lerId;
 
 public class ClienteService {
-    public static void cadastrarCliente (String arqIdCliente, String arqCliente, Scanner sc){
-        int id = lerId(arqIdCliente);
-        if(id == -1){
-            System.err.println("Erro ao obter ID do cliente");
-            return;
+    public static void cadastrarCliente(String arqIdCliente, String arqCliente, Scanner sc) {
+        try {
+            int id = lerId(arqIdCliente);
+            Clientes cliente = criarCliente(id, sc);
+            salvarCliente(cliente, arqCliente);
+            gravarId((id + 1), arqIdCliente);
+
+            System.out.println("Cliente cadastrado com sucesso!");
+
+        } catch (IllegalArgumentException e) {
+            System.err.println("Erro no cadastro: " + e.getMessage());
         }
-        Clientes cliente = criarCliente(id,sc);
-
-        salvarCliente(cliente,arqCliente);
-
-        gravarId(id+1, arqIdCliente);
     }
+
     private static void salvarCliente(Clientes c, String arq) {
         try (PrintWriter pw = new PrintWriter(new FileWriter(arq, true))) {
             pw.println(
@@ -41,24 +44,26 @@ public class ClienteService {
             e.printStackTrace();
         }
     }
-
     private static Clientes criarCliente (int id, Scanner sc) {
         Clientes cliente = new Clientes();
         Endereco endereco = new Endereco();
         cliente.setId(id);
-        //Atribuir valores
 
         System.out.print("\nNome: ");
         cliente.setNome(sc.nextLine());
+        ClienteValidator.validarNome(cliente);
 
         System.out.print("\nEmail: ");
         cliente.setEmail(sc.nextLine());
+        ClienteValidator.validarEmail(cliente);
 
         System.out.print("\nSenha: ");
         cliente.setSenha(sc.nextLine());
 
         System.out.print("\nTelefone: ");
         cliente.setTelefone(sc.nextLine());
+        ClienteValidator.validarTelefone(cliente);
+
 
         System.out.println("\n---Endereço---");
         System.out.print("\nRua: ");
@@ -75,58 +80,50 @@ public class ClienteService {
         endereco.setEstado(sc.nextLine());
         cliente.setEndereco(endereco);
         sc.nextLine();
+
+        ClienteValidator.validarNome(cliente);
+        ClienteValidator.validarEmail(cliente);
+
         return cliente;
     }
+    public static Clientes login(String email, String senha, String arqCliente) {
 
-    private static Clientes buscarPorId(int id, String arqCliente) {
         try (BufferedReader br = new BufferedReader(new FileReader(arqCliente))) {
+
             String linha;
             while ((linha = br.readLine()) != null) {
                 String[] dados = linha.split(";");
-                int idArquivo = Integer.parseInt(dados[0]);
-                if (idArquivo == id) {
-                    Clientes cliente = getClientes(idArquivo, dados);
-                    return cliente; //Aqui retorna os dados do cliente se o ID digitado for encontrado no arquivo
+
+                if (dados[2].equals(email) && dados[3].equals(senha)) {
+                    Clientes cliente = new Clientes();
+                    cliente.setId(Integer.parseInt(dados[0]));
+                    cliente.setNome(dados[1]);
+                    cliente.setEmail(dados[2]);
+                    cliente.setSenha(dados[3]);
+                    return cliente;
                 }
             }
-        } catch (IOException | NumberFormatException e) {
-            System.err.println("Erro ao buscar cliente por ID");
+
+        } catch (IOException e) {
+            System.err.println("Erro ao fazer login");
             e.printStackTrace();
         }
-        return null; //Aqui vai retornar nulo se nao encontrar NADA
+
+        return null;
     }
-
-    //Complemento de buscarPorId
-    private static Clientes getClientes(int idArquivo, String[] dados) {
-        Clientes cliente = new Clientes();
-        cliente.setId(idArquivo);
-        cliente.setNome(dados[1]);
-        cliente.setEmail(dados[2]);
-        //cliente.setSenha(dados[3]);
-        cliente.setTelefone(dados[4]);
-
-        Endereco endereco = new Endereco();
-        endereco.setRua(dados[5]);
-        endereco.setNumero(Integer.parseInt(dados[6]));
-        endereco.setBairro(dados[7]);
-        endereco.setEstado(dados[8]);
-        cliente.setEndereco(endereco);
-        return cliente;
-    }
-
     public static void listarClientes (String arqCliente){
-        for(int id = 0; ;id++) {
-            Clientes cliente = buscarPorId(id,arqCliente);
-            if (cliente == null){
-                break;
+        System.out.println("Lista de todos os clientes: ");
+        try (BufferedReader br = new BufferedReader(new FileReader(arqCliente))){
+            String linha;
+            while((linha=br.readLine()) != null){
+                String[] dados = linha.split(";");
+                System.out.println("ID: " + dados[0] +
+                        "\nNome do cliente: "+ dados[1] + "\nEmail: " +
+                        dados[2]);
             }
-            Endereco endereco = cliente.getEndereco();
-            System.out.println("ID: "+cliente.getId()+"\nCliente: " + cliente.getNome());
-            System.out.println("Endereço: \nRua: "+endereco.getRua()
-            +"\nNúmero: "+ endereco.getNumero()
-            +"\nBairro: "+ endereco.getBairro()
-            +"\nEstado: "+ endereco.getEstado()
-            +"\n--------------------------------");
+        } catch (IOException e){
+            System.err.println("Erro ao listar os clientes.");
+            e.printStackTrace();
         }
     }
 }

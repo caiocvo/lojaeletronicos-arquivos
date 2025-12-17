@@ -1,173 +1,203 @@
 package main;
 
-import main.service.ProdutoService;
-import main.util.ArquivoUtil;
-
+import main.models.*;
+import main.service.*;
 import java.io.*;
 import java.util.Objects;
 import java.util.Scanner;
 
 public class App {
-    public static void main(String[] args) {
-        //Anotações:
-        //Agora com um vetor no carrinho você fala quais items do carrinho você quer comprar
 
+    public static void main(String[] args) {
+
+        Scanner sc = new Scanner(System.in);
         String raiz = "c://lojaTec/";
         String raizClientes = raiz + "clientes/";
         String raizProdutos = raiz + "produtos/";
-        String raizPedido = raiz + "pedidos/";
-        String raizEndereco = raiz + "enderecos/";
-        String raizCarrinho = raiz + "carrinho/";
+        String raizPedidos  = raiz + "pedidos/";
 
-        //Arquivos
+        String arqClientes  = raizClientes + "clientes.txt";
+        String arqProdutos  = raizProdutos + "produtos.txt";
+        String arqPedidos   = raizPedidos + "pedidos.txt";
+
         String arqIdCliente = raiz + "idCliente.txt";
         String arqIdProduto = raiz + "idProduto.txt";
         String arqIdPedido  = raiz + "idPedido.txt";
 
-        //Login ADM
-        String idADM = "457";
-        String senhaADM = "1234";
-        boolean acessoADM = false;
-        Scanner sc = new Scanner(System.in);
-        iniciarReset(raiz,raizClientes,raizProdutos,raizPedido,raizEndereco,raizCarrinho,arqIdCliente,arqIdProduto,arqIdPedido);
-        //LOGIN
-        entrar();
-        char opLogin = sc.nextLine().trim().charAt(0);
-        if(Objects.equals(opLogin,'2'))
-            acessoADM = funcaoADM(idADM,senhaADM,sc);
+        iniciarSistema(raiz, raizClientes, raizProdutos, raizPedidos,
+                arqIdCliente, arqIdProduto, arqIdPedido);
+        //Login
+        System.out.println("1) Usuário");
+        System.out.println("2) ADM");
+        System.out.print("Escolha: ");
+        char tipoLogin = sc.nextLine().charAt(0);
 
-        //else
-        //Aqui você chama o menu de cadastro de cliente
+        //ADM
+        if (tipoLogin == '2') {
+            boolean acessoADM = false;
 
-        char opcao = 0;
+            while (!acessoADM) {
+                acessoADM = loginADM(sc);
 
-//CHAMADA DOS MENUS QUE VOCE AINDA VAI CRIAR
-
-        while(true){
-            // ... dentro do while(true)
-            if(acessoADM){
+                if (!acessoADM) {
+                    System.out.println("Email ou senha incorretos. Tente novamente.\n");
+                }
+            }
+            while (true) {
                 menuADM();
-                opcao = sc.nextLine().trim().charAt(0); // Adicionei .trim() para segurança
-                if(Objects.equals(opcao,'5'))
-                    break;
+                char op = sc.nextLine().charAt(0);
 
-                // -------------------------------------------------------------------
-                // CHAMADA DO PRODUTOSERVICE AQUI
-                // -------------------------------------------------------------------
-                switch (opcao){
+                if (op == '6') break;
+
+                switch (op) {
                     case '1':
-                        // 1) Cadastrar Produtos
-                        // Passa: arqIdProduto, o caminho onde o produto final será salvo, e o Scanner.
-                        ProdutoService.cadastrarProduto(arqIdProduto, raizProdutos + "produtos.txt", sc);
+                        ProdutoService.cadastrarProduto(arqIdProduto, arqProdutos, sc);
                         break;
+
                     case '2':
-                        // Aqui você chamaria o listar produtos
-                        System.out.println("Opção de Listar Produtos (ainda não implementada)");
+                        ProdutoService.listarProdutos(arqProdutos);
                         break;
-                    // ... outras opções
-                    default:
-                        System.out.println("Opção inválida. Tente novamente.");
+
+                    case '3':
+                        ClienteService.listarClientes(arqClientes);
+                        break;
+
+                    case '4':
+                        System.out.print("ID do produto: ");
+                        int idAlt = sc.nextInt();
+                        sc.nextLine();
+                        ProdutoService.atualizarProduto(idAlt, arqProdutos, sc);
+                        break;
+
+                    case '5':
+                        System.out.print("ID do produto: ");
+                        int idExc = sc.nextInt();
+                        sc.nextLine();
+                        ProdutoService.excluirProduto(idExc, arqProdutos);
                         break;
                 }
-                // -------------------------------------------------------------------
             }
-// ...
-            //Aqui voce precisa chamar a função cliente para ele fazer o Big loggin ou entao chamar o menu
+        }
+        //Cliente
+        else {
+            System.out.println("1) Login");
+            System.out.println("2) Cadastrar");
+            char op = sc.nextLine().charAt(0);
+            Clientes cliente;
+
+            if (op == '2') {
+                ClienteService.cadastrarCliente(arqIdCliente, arqClientes, sc);
+            }
+
+            System.out.print("Email: ");
+            String email = sc.nextLine();
+            System.out.print("Senha: ");
+            String senha = sc.nextLine();
+
+            cliente = ClienteService.login(email, senha, arqClientes);
+
+            if (cliente == null) {
+                System.err.println("Login inválido.");
+                return;
+            }
+            Carrinho carrinho = CarrinhoService.criarCarrinho(cliente);
+            while (true) {
+                menuCliente();
+                char opc = sc.nextLine().charAt(0);
+
+                if (opc == '6') break;
+
+                switch (opc) {
+                    case '1':
+                        ProdutoService.listarProdutos(arqProdutos);
+                        break;
+
+                    case '2':
+                        System.out.print("ID do produto: ");
+                        int idProd = sc.nextInt();
+                        System.out.print("Quantidade: ");
+                        int qtd = sc.nextInt();
+                        sc.nextLine();
+
+                        Produto p = ProdutoService.buscarPorId(idProd, arqProdutos);
+                        if (p == null) {
+                            System.err.println("Produto não encontrado");
+                            break;
+                        }
+
+                        ItemCarrinho item = new ItemCarrinho();
+                        item.setProduto(p);
+                        item.setQuantidade(qtd);
+                        CarrinhoService.adicionarItem(carrinho, item);
+                        break;
+
+                    case '3':
+                        CarrinhoService.listarItens(carrinho);
+                        System.out.println("Total: R$" + carrinho.getValorTotal());
+                        break;
+
+                    case '4':
+                        CarrinhoService.listarItens(carrinho);
+                        System.out.print("Digite o índice do item para remover: ");
+                        int indiceRemover = sc.nextInt();
+                        sc.nextLine();
+                        CarrinhoService.removerItem(carrinho, indiceRemover);
+                        System.out.println("Item removido!");
+                        break;
+
+                    case '5':
+                        PedidoService.finalizarPedido(carrinho, arqIdPedido, arqPedidos, arqProdutos);
+                        carrinho = CarrinhoService.criarCarrinho(cliente);
+                        break;
+
+                }
+
+            }
         }
     }
 
 
-    private static void iniciarReset (String raiz,String raizClientes, String raizProdutos, String raizPedido,
-                                      String raizEndereco, String raizCarrinho, String arqIdCliente,String arqIdProduto, String arqIdPedido){
-        File dir=new File(raiz);
-        if(!dir.exists()) {
-            dir.mkdir();
-        }
-        dir=new File(raizClientes);
-        if(!dir.exists()){//Se não existir cria pasta clientes
-            dir.mkdir();
-        }
-        dir = new File(raizProdutos);
-        if(!dir.exists()){//Se não existir cria pasta produtos
-            dir.mkdir();
-        }
-        dir = new File(raizPedido);
-        if(!dir.exists()){
-            dir.mkdir();
-        }
-        else
-            apagarArquivos(dir);
-        dir = new File(raizEndereco);
-        if (!dir.exists()) {
-            dir.mkdir();
-        } else {
-            apagarArquivos(dir);
-        }
-
-        dir = new File(raizCarrinho);
-        if (!dir.exists()) {
-            dir.mkdir();
-        } else {
-            apagarArquivos(dir);
-        }
-        ArquivoUtil.gravarId(0,arqIdCliente);
-        ArquivoUtil.gravarId(0,arqIdProduto);
-        ArquivoUtil.gravarId(0,arqIdPedido);
-    }
-
-    //Para criar cliente, é necessário ler o id e após isso,
-    // gravar no arquivo
-
-
-    //Apagar
-    private static void apagarArquivos (File dir) {
-        String []arquivos = dir.list();
-        for(String arq:arquivos){
-            File f = new File(arq);
-            f.delete();
-        }
-    }
-
-    private static boolean funcaoADM (String id, String senha, Scanner sc){
-
-        System.out.print("\nPor favor digite o ID do ADM: ");
-        String idTentativa = sc.nextLine().trim();
-
-        System.out.print("\nPor favor digite a senha: ");
-        String senhaTentativa = sc.nextLine().trim();
-
-        if(!Objects.equals(idTentativa, id) || !Objects.equals(senha, senhaTentativa)){
-            System.err.print("Email ou senha estao incorretos!");
-        } else {
-            System.out.println("Bem vindo! Por favor digite uma das seguintes opções: \n");
-            return true;
-        }
-        return false;
+    private static boolean loginADM(Scanner sc) {
+        System.out.print("ID ADM: ");
+        String id = sc.nextLine();
+        System.out.print("Senha: ");
+        String senha = sc.nextLine();
+        return Objects.equals(id, "457") && Objects.equals(senha, "1234");
     }
 
     private static void menuADM() {
-        System.out.println("Menu do Administrador: ");
-        System.out.println("1) Cadastrar Produtos" +
-                        "\n2) Listar todos produtos" +
-                        "\n3) Listar todos clientes" +
-                        "\n4) Listar todos os pedidos" +
-                        "\n5) Sair");
-        System.out.print("\nDigite uma das opções: ");
+        System.out.println("\n--- MENU ADM ---");
+        System.out.println("1) Cadastrar Produto");
+        System.out.println("2) Listar Produtos");
+        System.out.println("3) Listar Clientes");
+        System.out.println("4) Atualizar Produto");
+        System.out.println("5) Excluir Produto");
+        System.out.println("6) Sair");
+        System.out.print("Opção: ");
     }
 
     private static void menuCliente() {
-        System.out.println("Menu do Cliente: ");
-        System.out.println("1) Ver carrinho" +
-                        "\n2) Ver produtos" +
-                        "\n3) ..." +
-                        "\n4) Sair");
-        //Pensei em fazer tambem um para pedido, aí os items no carrinho tivessem IDs, onde voce digita o ID do que deseja comprar
-        System.out.print("\nDigite uma das opções: ");
+        System.out.println("\n--- MENU CLIENTE ---");
+        System.out.println("1) Listar Produtos");
+        System.out.println("2) Adicionar ao Carrinho");
+        System.out.println("3) Ver Carrinho");
+        System.out.println("4) Remover Item do Carrinho");
+        System.out.println("5) Finalizar Pedido");
+        System.out.println("6) Sair");
+        System.out.print("Opção: ");
     }
 
-    private static void entrar(){
-        System.out.println("Deseja entrar como Adminstrador ou usuário?: " +
-                "\n1)Usuário" +
-                "\n2)ADM");
+
+    private static void iniciarSistema(String raiz, String clientes, String produtos, String pedidos,
+                                       String idCliente, String idProduto, String idPedido) {
+
+        new File(raiz).mkdir();
+        new File(clientes).mkdir();
+        new File(produtos).mkdir();
+        new File(pedidos).mkdir();
+
+        main.util.ArquivoUtil.gravarId(0, idCliente);
+        main.util.ArquivoUtil.gravarId(0, idProduto);
+        main.util.ArquivoUtil.gravarId(0, idPedido);
     }
 }
