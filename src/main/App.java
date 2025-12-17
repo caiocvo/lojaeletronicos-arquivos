@@ -193,13 +193,24 @@ public class App {
     private static void iniciarSistema(String raiz, String clientes, String produtos, String pedidos,
                                        String idCliente, String idProduto, String idPedido) {
 
-        new File(raiz).mkdir();
-        new File(clientes).mkdir();
-        new File(produtos).mkdir();
-        new File(pedidos).mkdir();
+        new File(raiz).mkdirs();
+        new File(clientes).mkdirs();
+        new File(produtos).mkdirs();
+        new File(pedidos).mkdirs();
 
-        FileUtil.gravarId(0, idCliente);
-        FileUtil.gravarId(0, idProduto);
-        FileUtil.gravarId(0, idPedido);
+        File fIdCliente = new File(idCliente);
+        if (!fIdCliente.exists()) {
+            FileUtil.gravarId(0, idCliente);
+        }
+
+        File fIdProduto = new File(idProduto);
+        if (!fIdProduto.exists()) {
+            FileUtil.gravarId(0, idProduto);
+        }
+
+        File fIdPedido = new File(idPedido);
+        if (!fIdPedido.exists()) {
+            FileUtil.gravarId(0, idPedido);
+        }
     }
 }

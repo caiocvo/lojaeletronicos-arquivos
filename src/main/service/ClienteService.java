@@ -3,6 +3,7 @@ package main.service;
 import main.exception.ClienteValidator;
 import main.models.Clientes;
 import main.models.Endereco;
+import main.util.FileUtil;
 
 import java.io.*;
 import java.util.Scanner;
@@ -13,17 +14,17 @@ import static main.util.FileUtil.lerId;
 public class ClienteService {
     public static void cadastrarCliente(String arqIdCliente, String arqCliente, Scanner sc) {
         try {
-            int id = lerId(arqIdCliente);
+            int id = FileUtil.lerId(arqIdCliente);
             Clientes cliente = criarCliente(id, sc);
             salvarCliente(cliente, arqCliente);
-            gravarId((id + 1), arqIdCliente);
+            FileUtil.gravarId(id + 1, arqIdCliente);
 
             System.out.println("Cliente cadastrado com sucesso!");
-
         } catch (IllegalArgumentException e) {
             System.err.println("Erro no cadastro: " + e.getMessage());
         }
     }
+
 
     private static void salvarCliente(Clientes c, String arq) {
         try (PrintWriter pw = new PrintWriter(new FileWriter(arq, true))) {
@@ -126,4 +127,5 @@ public class ClienteService {
             e.printStackTrace();
         }
     }
+
 }

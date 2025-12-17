@@ -43,12 +43,6 @@ public class Carrinho {
         itens = novo;
     }
 
-    public void atualizarQuantidade(int indice, int novaQtd) {
-        if (indice < 0 || indice >= itens.length)
-            return;
-        itens[indice].setQuantidade(novaQtd);
-    }
-
     public double getValorTotal() {
         double total = 0;
         for (ItemCarrinho item : itens) {

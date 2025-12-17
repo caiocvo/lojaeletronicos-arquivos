@@ -1,6 +1,8 @@
 package main.service;
 import main.exception.ProdutoValidator;
 import main.models.Produto;
+import main.util.FileUtil;
+
 import java.io.*;
 import java.util.Scanner;
 
@@ -8,16 +10,18 @@ import static main.util.FileUtil.gravarId;
 import static main.util.FileUtil.lerId;
 
 public class ProdutoService {
-    public static void cadastrarProduto (String arqIdProduto,String arqProduto,Scanner sc){
-        int id = lerId(arqIdProduto);
-        if(id == -1){
-            System.err.println("Erro ao obter ID do produto.");
-            return;
+    public static void cadastrarProduto(String arqIdProduto, String arqProduto, Scanner sc) {
+        try {
+            int id = FileUtil.lerId(arqIdProduto);
+            Produto produto = criarProduto(id, sc);
+            salvarProduto(produto, arqProduto);
+            FileUtil.gravarId(id + 1, arqIdProduto);
+            System.out.println("Produto cadastrado com sucesso!");
+        } catch (IllegalArgumentException e) {
+            System.err.println("Erro no cadastro do produto: " + e.getMessage());
         }
-        Produto produto = criarProduto(id,sc);
-        salvarProduto(produto,arqProduto);
-        gravarId((id+1), arqIdProduto);
     }
+
     private static Produto criarProduto (int id, Scanner sc){
         Produto produto = new Produto();
         produto.setId(id);
@@ -110,10 +114,12 @@ public class ProdutoService {
 
                 if (id == idExcluir) {
                     excluiu = true;
-                    continue; // Pula o produto
+                    continue;
+                    //pula o produto
                 }
 
-                pw.println(linha); // Mantém os produtos não excluídos
+                pw.println(linha);
+                //mantém os produtos não excluídos
             }
         } catch (IOException e) {
             System.err.println("Erro ao excluir produto");
@@ -122,7 +128,8 @@ public class ProdutoService {
         }
 
         if (arquivo.delete()) {
-            temp.renameTo(arquivo); // Substitui o arquivo original
+            temp.renameTo(arquivo);
+            //substitui o arquivo original
         }
         return excluiu;
     }
