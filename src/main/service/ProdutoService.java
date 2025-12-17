@@ -105,7 +105,6 @@ public class ProdutoService {
         boolean excluiu = false;
         try (BufferedReader br = new BufferedReader(new FileReader(arquivo));
              PrintWriter pw = new PrintWriter(new FileWriter(temp))) {
-
             String linha;
 
             while ((linha = br.readLine()) != null) {
@@ -115,11 +114,9 @@ public class ProdutoService {
                 if (id == idExcluir) {
                     excluiu = true;
                     continue;
-                    //pula o produto
                 }
 
                 pw.println(linha);
-                //mantém os produtos não excluídos
             }
         } catch (IOException e) {
             System.err.println("Erro ao excluir produto");
@@ -129,14 +126,12 @@ public class ProdutoService {
 
         if (arquivo.delete()) {
             temp.renameTo(arquivo);
-            //substitui o arquivo original
         }
         return excluiu;
     }
     public static boolean atualizarProduto(int id, String arqProduto, Scanner sc) {
         File arquivo = new File(arqProduto);
         File temp = new File("temp.txt");
-
         boolean atualizado = false;
 
         try (BufferedReader br = new BufferedReader(new FileReader(arquivo));

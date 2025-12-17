@@ -12,6 +12,7 @@ import static main.util.FileUtil.gravarId;
 import static main.util.FileUtil.lerId;
 
 public class ClienteService {
+    //Chamo minhas funções para cadastro
     public static void cadastrarCliente(String arqIdCliente, String arqCliente, Scanner sc) {
         try {
             int id = FileUtil.lerId(arqIdCliente);
@@ -25,7 +26,7 @@ public class ClienteService {
         }
     }
 
-
+    //Onde ele é escrito
     private static void salvarCliente(Clientes c, String arq) {
         try (PrintWriter pw = new PrintWriter(new FileWriter(arq, true))) {
             pw.println(

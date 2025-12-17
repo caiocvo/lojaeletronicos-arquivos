@@ -1,13 +1,10 @@
 package main.models;
 
-import java.util.Date;
-
 public class Pedido {
 
     private int id;
     private int idCliente;
     private ItemCarrinho[] itens;
-    private Date data;
 
     public int getId() {
         return id;
@@ -31,14 +28,6 @@ public class Pedido {
 
     public void setItens(ItemCarrinho[] itens) {
         this.itens = itens;
-    }
-
-    public Date getData() {
-        return data;
-    }
-
-    public void setData(Date data) {
-        this.data = data;
     }
 
     public double getValorTotal() {

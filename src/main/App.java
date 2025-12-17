@@ -102,6 +102,7 @@ public class App {
                 System.err.println("Login inválido.");
                 return;
             }
+
             Carrinho carrinho = CarrinhoService.criarCarrinho(cliente);
             while (true) {
                 menuCliente();
@@ -135,7 +136,7 @@ public class App {
 
                     case '3':
                         CarrinhoService.listarItens(carrinho);
-                        System.out.println("Total: R$" + carrinho.getValorTotal());
+                        System.out.println(String.format("Total: R$ %.2f" , carrinho.getValorTotal()));
                         break;
 
                     case '4':
