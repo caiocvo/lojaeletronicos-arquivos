@@ -5,7 +5,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-public class ArquivoUtil {
+public class FileUtil {
     public static void gravarId(int i, String arq){
         try{
             PrintWriter pw = new PrintWriter(arq);

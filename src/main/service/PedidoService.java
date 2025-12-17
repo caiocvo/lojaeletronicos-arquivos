@@ -9,8 +9,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Date;
 
-import static main.util.ArquivoUtil.gravarId;
-import static main.util.ArquivoUtil.lerId;
+import static main.util.FileUtil.gravarId;
+import static main.util.FileUtil.lerId;
 
 public class PedidoService {
 

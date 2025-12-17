@@ -4,8 +4,8 @@ import main.models.Produto;
 import java.io.*;
 import java.util.Scanner;
 
-import static main.util.ArquivoUtil.gravarId;
-import static main.util.ArquivoUtil.lerId;
+import static main.util.FileUtil.gravarId;
+import static main.util.FileUtil.lerId;
 
 public class ProdutoService {
     public static void cadastrarProduto (String arqIdProduto,String arqProduto,Scanner sc){

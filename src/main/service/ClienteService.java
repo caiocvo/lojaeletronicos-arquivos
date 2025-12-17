@@ -7,8 +7,8 @@ import main.models.Endereco;
 import java.io.*;
 import java.util.Scanner;
 
-import static main.util.ArquivoUtil.gravarId;
-import static main.util.ArquivoUtil.lerId;
+import static main.util.FileUtil.gravarId;
+import static main.util.FileUtil.lerId;
 
 public class ClienteService {
     public static void cadastrarCliente(String arqIdCliente, String arqCliente, Scanner sc) {

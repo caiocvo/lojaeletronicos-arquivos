@@ -2,6 +2,8 @@ package main;
 
 import main.models.*;
 import main.service.*;
+import main.util.FileUtil;
+
 import java.io.*;
 import java.util.Objects;
 import java.util.Scanner;
@@ -196,8 +198,8 @@ public class App {
         new File(produtos).mkdir();
         new File(pedidos).mkdir();
 
-        main.util.ArquivoUtil.gravarId(0, idCliente);
-        main.util.ArquivoUtil.gravarId(0, idProduto);
-        main.util.ArquivoUtil.gravarId(0, idPedido);
+        FileUtil.gravarId(0, idCliente);
+        FileUtil.gravarId(0, idProduto);
+        FileUtil.gravarId(0, idPedido);
     }
 }
