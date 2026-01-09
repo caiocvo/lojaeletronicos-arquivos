@@ -3,17 +3,14 @@ package main.service;
 import main.models.Carrinho;
 import main.models.ItemCarrinho;
 import main.models.Pedido;
-
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Date;
 
 import static main.util.FileUtil.gravarId;
 import static main.util.FileUtil.lerId;
 
 public class PedidoService {
-
     public static void finalizarPedido(Carrinho carrinho, String arqIdPedido, String arqPedido, String arqProduto) {
 
         if (carrinho.getItens().length == 0) {
@@ -38,8 +35,6 @@ public class PedidoService {
                     arqProduto
             );
         }
-
-        pedido.setData(new Date());
 
         salvarPedido(pedido, arqPedido);
         gravarId(idPedido + 1, arqIdPedido);

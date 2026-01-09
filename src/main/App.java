@@ -85,25 +85,30 @@ public class App {
             System.out.println("1) Login");
             System.out.println("2) Cadastrar");
             char op = sc.nextLine().charAt(0);
-            Clientes cliente;
+            Clientes cliente = null;
 
             if (op == '2') {
-                ClienteService.cadastrarCliente(arqIdCliente, arqClientes, sc);
+                // Cadastro do cliente e retorno do objeto criado
+                cliente = ClienteService.cadastrarClienteRetorna(arqIdCliente, arqClientes, sc);
             }
 
-            System.out.print("Email: ");
-            String email = sc.nextLine();
-            System.out.print("Senha: ");
-            String senha = sc.nextLine();
+            if (op == '1' || cliente == null) {
+                // Login normal (ou se o cadastro falhou)
+                System.out.print("Email: ");
+                String email = sc.nextLine();
+                System.out.print("Senha: ");
+                String senha = sc.nextLine();
 
-            cliente = ClienteService.login(email, senha, arqClientes);
+                cliente = ClienteService.login(email, senha, arqClientes);
 
-            if (cliente == null) {
-                System.err.println("Login inválido.");
-                return;
+                if (cliente == null) {
+                    System.err.println("Login inválido.");
+                    return;
+                }
             }
 
             Carrinho carrinho = CarrinhoService.criarCarrinho(cliente);
+
             while (true) {
                 menuCliente();
                 char opc = sc.nextLine().charAt(0);
@@ -136,7 +141,7 @@ public class App {
 
                     case '3':
                         CarrinhoService.listarItens(carrinho);
-                        System.out.println(String.format("Total: R$ %.2f" , carrinho.getValorTotal()));
+                        System.out.println(String.format("Total: R$ %.2f", carrinho.getValorTotal()));
                         break;
 
                     case '4':
@@ -152,11 +157,10 @@ public class App {
                         PedidoService.finalizarPedido(carrinho, arqIdPedido, arqPedidos, arqProdutos);
                         carrinho = CarrinhoService.criarCarrinho(cliente);
                         break;
-
                 }
-
             }
         }
+
     }
 
 
